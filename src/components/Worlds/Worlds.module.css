@@ -1,0 +1,225 @@
+.section {
+  padding: 6rem var(--grid-margin);
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+}
+
+.heading {
+  grid-column: 1 / -1;
+  margin: 0 0 2.5rem;
+  font-weight: 400;
+  font-size: var(--fs-h2);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Tabs (pills) ---------- */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 0 0.5rem;
+  margin-bottom: 3rem; /* room for the pill shadows */
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    6px 6px 12px var(--shadow-dark),
+    -6px -6px 12px var(--shadow-light);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tab:hover {
+  transform: translateY(-1px);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+
+.tabActive,
+.tabActive:hover {
+  transform: none;
+  box-shadow:
+    inset 5px 5px 10px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
+}
+
+/* Small circular icon: inset socket */
+.icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 3px 6px var(--shadow-dark),
+    inset -3px -3px 6px var(--shadow-light);
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tabText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tabName {
+  font-size: var(--fs-p);
+  letter-spacing: 0.04em;
+}
+
+.tabLine {
+  font-size: var(--fs-h4);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Main card ---------- */
+.card {
+  grid-column: 1 / -1;
+  border-radius: 64px;
+  background: var(--surface);
+  padding: 5rem 8rem 4.5rem;
+  box-shadow:
+    20px 20px 40px var(--shadow-dark),
+    -20px -20px 40px var(--shadow-light);
+}
+
+.cardContent {
+  max-width: 1000px;
+}
+
+.eyebrow {
+  display: block;
+  font-size: var(--fs-h4);
+  letter-spacing: 0.08em;
+  color: var(--accent-tan);
+}
+
+.title {
+  margin: 0.15rem 0 2rem;
+  font-weight: 400;
+  font-size: var(--fs-h2);
+  line-height: 1.1;
+  color: var(--green);
+}
+
+/* Inset well holding the description.
+   Fixed height so the card keeps the same size on every tab; longer
+   descriptions scroll inside it instead of resizing the section. */
+.well {
+  height: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3rem 4rem;
+  border-radius: 32px;
+  background: var(--surface);
+  box-shadow:
+    inset 8px 8px 16px var(--shadow-dark),
+    inset -8px -8px 16px var(--shadow-light);
+}
+
+.wellText {
+  max-width: 54rem;
+  margin: 0 auto;
+  font-size: var(--fs-p);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+
+.wellText p {
+  margin: 0 0 1.6rem;
+}
+
+.wellText p:last-child {
+  margin-bottom: 0;
+}
+
+/* Raised pill button */
+.more {
+  display: inline-block;
+  margin-top: 3rem;
+  padding: 1.1rem 2.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-p);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  box-shadow:
+    8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
+  transition: box-shadow 0.2s ease;
+}
+
+.more:active {
+  box-shadow:
+    inset 6px 6px 12px var(--shadow-dark),
+    inset -6px -6px 12px var(--shadow-light);
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    padding: 0.5rem 0.5rem 1.5rem;
+    scroll-snap-type: x proximity;
+  }
+  .tab {
+    flex: none;
+    min-width: 210px;
+    scroll-snap-align: start;
+  }
+  .card {
+    padding: 3.5rem 3rem;
+  }
+  .well {
+    height: 24rem;
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 2.5rem 1.5rem;
+    border-radius: 40px;
+  }
+  .well {
+    height: 28rem;
+    padding: 1.5rem;
+    border-radius: 24px;
+  }
+}

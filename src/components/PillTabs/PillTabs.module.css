@@ -1,0 +1,104 @@
+/* Pills sit collapsed as icon-only circles and expand on hover / when active,
+   sliding the name and one-liner out from behind the icon. */
+.tabs {
+  /* Collapsed: 48px icon + 0.75rem padding on each side. */
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--grid-gutter);
+  margin-bottom: 3rem;
+}
+
+.tab {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  overflow: hidden;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    6px 6px 12px var(--shadow-dark),
+    -6px -6px 12px var(--shadow-light);
+  transition: box-shadow 0.2s ease;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+
+.active {
+  box-shadow:
+    inset 5px 5px 10px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
+}
+
+.icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 3px 6px var(--shadow-dark),
+    inset -3px -3px 6px var(--shadow-light);
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Stand-in while an item has no icon image yet. */
+.initial {
+  font-size: var(--fs-p);
+  letter-spacing: 0.04em;
+  color: var(--green);
+}
+
+/* Slides out from under the icon as the pill widens. */
+.text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name,
+.line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.name {
+  font-size: var(--fs-p);
+  letter-spacing: 0.04em;
+}
+
+.line {
+  font-size: var(--fs-h4);
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 1100px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 0.5rem 1.5rem;
+    gap: 1.25rem;
+  }
+}

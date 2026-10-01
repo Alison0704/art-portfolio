@@ -1,0 +1,279 @@
+.section {
+  padding: 6rem var(--grid-margin);
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+}
+
+.heading {
+  grid-column: 1 / -1;
+  margin: 0 0 2.5rem;
+  font-weight: 400;
+  font-size: var(--fs-h2);
+  letter-spacing: 0.02em;
+}
+
+.accent {
+  color: var(--accent-tan);
+}
+
+/* ---------- Two-column layout ---------- */
+.layout {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  align-items: stretch;
+}
+
+.info {
+  grid-column: 1 / 8;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0;
+  font-weight: 400;
+  font-size: var(--fs-h1);
+  line-height: 1.1;
+  color: var(--green);
+}
+
+.description {
+  margin: 1rem 0 2.5rem;
+  font-size: var(--fs-p);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Info card ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: 2.5rem 2.5rem 2.5rem;
+  border-radius: 40px;
+  background: var(--surface);
+  box-shadow:
+    16px 16px 32px var(--shadow-dark),
+    -16px -16px 32px var(--shadow-light);
+}
+
+.sectionTabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.sectionTab {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--fs-p);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    5px 5px 10px var(--shadow-dark),
+    -5px -5px 10px var(--shadow-light);
+  transition: box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.sectionTab:hover {
+  color: var(--green);
+}
+
+.sectionTabActive,
+.sectionTabActive:hover {
+  color: var(--green);
+  box-shadow:
+    inset 4px 4px 8px var(--shadow-dark),
+    inset -4px -4px 8px var(--shadow-light);
+}
+
+.sectionTab:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* Inset reading well.
+   Fixed height so Biography / Lore / Artworks all render at the same size;
+   longer entries scroll inside it instead of resizing the section. */
+.well {
+  height: 20rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2.5rem 3rem;
+  border-radius: 48px;
+  background: var(--surface);
+  font-size: var(--fs-p);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  box-shadow:
+    inset 8px 8px 16px var(--shadow-dark),
+    inset -8px -8px 16px var(--shadow-light);
+}
+
+.well p {
+  margin: 0 0 1.6rem;
+}
+
+.well p:last-child {
+  margin-bottom: 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow:
+    4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+}
+
+/* ---------- Arch portrait ---------- */
+.arch {
+  grid-column: 8 / -1;
+  position: relative;
+  min-height: 560px;
+  border-radius: 999px 999px 40px 40px;
+  background: var(--surface);
+  box-shadow:
+    16px 16px 32px var(--shadow-dark),
+    -16px -16px 32px var(--shadow-light);
+}
+
+/* Inset portrait frame: keeps a margin on all sides of the arch */
+.portraitFrame {
+  position: absolute;
+  inset: 1.5rem;
+  overflow: hidden;
+  border-radius: 999px 999px 28px 28px;
+  background: var(--bg);
+  box-shadow:
+    inset 8px 8px 16px var(--shadow-dark),
+    inset -8px -8px 16px var(--shadow-light);
+}
+
+.portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Character art that breaks out of the frame (bottom right) */
+.cutout {
+  position: absolute;
+  right: -2rem;
+  bottom: -1.5rem;
+  width: 70%;
+  max-height: 85%;
+  object-fit: contain;
+  object-position: bottom right;
+  pointer-events: none;
+  filter: drop-shadow(10px 14px 18px var(--shadow-dark));
+}
+
+.controls {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  z-index: 1;
+}
+
+.iconBtn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow:
+    5px 5px 10px var(--shadow-dark),
+    -5px -5px 10px var(--shadow-light);
+  transition: box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.iconBtn:hover {
+  color: var(--green);
+}
+
+.iconGlyph {
+  display: grid;
+  place-items: center;
+}
+
+.iconBtn:active,
+.iconBtnActive {
+  box-shadow:
+    inset 4px 4px 8px var(--shadow-dark),
+    inset -4px -4px 8px var(--shadow-light);
+}
+
+/* Pressed-in while the clip is playing. */
+.iconBtnActive {
+  color: var(--green);
+}
+
+.iconBtn:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .info,
+  .arch {
+    grid-column: 1 / -1;
+  }
+  .arch {
+    order: -1;
+    min-height: 420px;
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .portraitFrame {
+    inset: 1rem;
+    border-radius: 999px 999px 20px 20px;
+  }
+  .card {
+    padding: 1.5rem 1rem;
+    border-radius: 32px;
+  }
+  .well {
+    height: 24rem;
+    padding: 1.5rem;
+    border-radius: 28px;
+  }
+  .sectionTabs {
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Vocaterra",
+    "date": "Late Summer · Solara",
+    "description": "Vocaterra is a fantasy world where the magic of the land responds directly to labor and purpose, causing its inhabitants to physically transform into anthropomorphic animal forms the moment they start their workday. In this realm, a magical phenomenon known as the Trade Shift activates whenever someone begins performing their specialized profession, instantly granting them the physiological advantages of an animal perfectly suited to their trade.",
+    "status": "Playable now",
+    "url":"",
+    "tag": "World"
+  },
+  {
+    "name": "Inktober by Artis Moris",
+    "date": "October 2026",
+    "description": "A monthly art challenge where participants create ink drawings inspired by daily theme.",
+    "status": "Artis Moris Event",
+    "url": "https://itch.io/games/tag-fantasy",
+    "tag": "Event"
+  }
+]

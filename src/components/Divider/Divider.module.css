@@ -1,0 +1,13 @@
+.wrap {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+}
+
+.rule {
+  height: 1px;
+  margin: 0;
+  border: none;
+  background: var(--accent-tan);
+  opacity: 0.55;
+}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watercolour Drops</title>
+<style>
+  :root {
+    --paper: #f5efe3;
+    /* heavily desaturated, watery ultramarine */
+    --c: #8a98b4;
+    --dur: 12s;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--paper);
+    overflow: hidden;
+    position: relative;
+    touch-action: none;
+  }
+
+  /* ---------- Paper texture ---------- */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  body::before {
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.035' numOctaves='4' stitchTiles='stitch'/><feDiffuseLighting lighting-color='white' surfaceScale='2.2'><feDistantLight azimuth='225' elevation='55'/></feDiffuseLighting></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+    mix-blend-mode: multiply;
+    opacity: .38;
+  }
+
+  body::after {
+    background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(120, 95, 60, .18) 100%);
+  }
+
+  .hint {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    font: 13px/1.4 Georgia, serif;
+    font-style: italic;
+    letter-spacing: .02em;
+    color: #8c8272;
+    pointer-events: none;
+    z-index: 11;
+    transition: opacity 1.5s;
+  }
+  .hint.gone { opacity: 0; }
+
+  /* ---------- A single drop ---------- */
+  .drop {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 0;
+    height: 0;
+    perspective: 700px;
+    transform-style: preserve-3d;
+    pointer-events: none;
+  }
+
+  /* falling droplet — seen from above, coming down the z axis toward the paper */
+  .fall {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 30%, rgba(255,255,255,.9) 0 10%, rgba(255,255,255,0) 26%),
+      radial-gradient(circle at 60% 65%, color-mix(in srgb, var(--c) 60%, white) 0 20%, transparent 60%),
+      radial-gradient(circle, color-mix(in srgb, var(--c) 80%, transparent) 55%, color-mix(in srgb, var(--c) 80%, #334) 100%);
+    box-shadow: inset -2px -3px 5px rgba(0,0,0,.2);
+    animation: fall var(--dur) both;
+    z-index: 5;
+  }
+
+  .shadow {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(60,45,30,.5), rgba(60,45,30,0) 70%);
+    animation: shadow var(--dur) both;
+    z-index: 4;
+  }
+
+  /* the bloom on the paper — thin, watery wash with a soft tide-line */
+  .bloom {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    left: calc(var(--s) / -2);
+    top: calc(var(--s) / -2);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle,
+        color-mix(in srgb, var(--c) 14%, transparent) 0 40%,
+        color-mix(in srgb, var(--c) 22%, transparent) 58%,
+        color-mix(in srgb, var(--c) 40%, transparent) 66%,
+        color-mix(in srgb, var(--c) 62%, transparent) 69.5%,
+        transparent 71%);
+    filter: url(#wc1);
+    mix-blend-mode: multiply;
+    transform: rotate(var(--r)) scale(0);
+    animation: bloom var(--dur) both;
+  }
+  .drop.f2 .bloom { filter: url(#wc2); }
+  .drop.f3 .bloom { filter: url(#wc3); }
+
+  .bloom::before {
+    content: "";
+    position: absolute;
+    inset: -14%;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      transparent 0 50%,
+      color-mix(in srgb, var(--c) 9%, transparent) 62%,
+      color-mix(in srgb, var(--c) 18%, transparent) 69%,
+      transparent 71%);
+    transform: translate(6%, 4%);
+  }
+
+  .bloom::after {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, rgba(255,255,255,.7), transparent 45%);
+    mix-blend-mode: screen;
+    animation: sheen var(--dur) both;
+  }
+
+  .spatter {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    left: -3px;
+    top: -3px;
+    border-radius: 50%;
+    color: color-mix(in srgb, var(--c) 45%, transparent);
+    box-shadow:
+      calc(var(--s) * .62) calc(var(--s) * -.18) 0 0 currentColor,
+      calc(var(--s) * -.55) calc(var(--s) * .34) 0 1px currentColor,
+      calc(var(--s) * .12) calc(var(--s) * .64) 0 -1px currentColor,
+      calc(var(--s) * -.28) calc(var(--s) * -.6) 0 0 currentColor,
+      calc(var(--s) * .7) calc(var(--s) * .3) 0 -2px currentColor;
+    filter: url(#wc3);
+    mix-blend-mode: multiply;
+    opacity: 0;
+    transform: rotate(var(--r));
+    animation: spatter var(--dur) both;
+  }
+
+  .ring {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    left: -12px;
+    top: -12px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--c) 60%, transparent);
+    opacity: 0;
+    animation: ring var(--dur) both;
+  }
+
+  /* ---------- Keyframes (run once; the wash stays on the paper) ---------- */
+  @keyframes fall {
+    0%   { transform: translateZ(620px); opacity: 0; filter: blur(8px);
+           animation-timing-function: cubic-bezier(.5, 0, 1, .6); }
+    1.5% { opacity: 1; }
+    7%   { transform: translateZ(0); opacity: 1; filter: blur(0);
+           animation-timing-function: ease-out; }
+    7.6% { transform: translateZ(0) scale(1.9); opacity: .85; filter: blur(0); }
+    8.4% { transform: translateZ(0) scale(2.6); opacity: 0; }
+    100% { transform: translateZ(0) scale(2.6); opacity: 0; }
+  }
+
+  @keyframes shadow {
+    0%   { transform: translate(90px, 70px) scale(5); opacity: 0; filter: blur(12px);
+           animation-timing-function: cubic-bezier(.5, 0, 1, .6); }
+    7%   { transform: translate(0, 0) scale(1.1); opacity: .5; filter: blur(1px); }
+    7.8% { transform: translate(0, 0) scale(1.6); opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes bloom {
+    0%, 7%  { transform: rotate(var(--r)) scale(0);    opacity: 0; }
+    7.4%    { transform: rotate(var(--r)) scale(.12);  opacity: .55;
+              animation-timing-function: cubic-bezier(.1, .7, .3, 1); }
+    22%     { transform: rotate(var(--r)) scale(.82); }
+    48%     { transform: rotate(var(--r)) scale(1);    opacity: .55; }
+    100%    { transform: rotate(var(--r)) scale(1.02); opacity: .45; }
+  }
+
+  @keyframes sheen {
+    0%, 7.4% { opacity: 0; }
+    12%      { opacity: .8; }
+    50%      { opacity: 0; }
+    100%     { opacity: 0; }
+  }
+
+  @keyframes spatter {
+    0%, 7.3% { opacity: 0; transform: rotate(var(--r)) scale(.3); }
+    8.5%     { opacity: .45; transform: rotate(var(--r)) scale(1); }
+    100%     { opacity: .35; transform: rotate(var(--r)) scale(1); }
+  }
+
+  @keyframes ring {
+    0%, 7%  { opacity: 0; transform: scale(.4); }
+    7.5%    { opacity: .5; transform: scale(1); }
+    11%     { opacity: 0; transform: scale(3.2); }
+    100%    { opacity: 0; transform: scale(3.2); }
+  }
+
+  /* old washes fade away so the page never gets muddy */
+  .drop.fading { transition: opacity 4s; opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fall, .shadow, .ring, .bloom::after { display: none; }
+    .bloom, .spatter { animation: none; opacity: 1; transform: rotate(var(--r)) scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wc1" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008" numOctaves="4" seed="2" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="80" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.7 1.3" result="gm"/>
+      <feComposite in="d" in2="gm" operator="in" result="gr"/>
+      <feGaussianBlur in="gr" stdDeviation="0.8"/>
+    </filter>
+    <filter id="wc2" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="4" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="70" xChannelSelector="G" yChannelSelector="B" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.7 1.3" result="gm"/>
+      <feComposite in="d" in2="gm" operator="in" result="gr"/>
+      <feGaussianBlur in="gr" stdDeviation="0.8"/>
+    </filter>
+    <filter id="wc3" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="23" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="55" xChannelSelector="B" yChannelSelector="R" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="17" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.7 1.3" result="gm"/>
+      <feComposite in="d" in2="gm" operator="in" result="gr"/>
+      <feGaussianBlur in="gr" stdDeviation="0.7"/>
+    </filter>
+  </defs>
+</svg>
+
+<p class="hint">Rest your cursor for five seconds…</p>
+
+<script>
+  const HOLD_MS = 5000;   // how long the cursor must stay still
+  const JITTER = 4;       // px of movement still counted as "in place"
+  const MAX_DROPS = 12;   // older washes fade out beyond this
+  const LIFETIME_MS = 30000; // each wash disappears after this
+
+  const hint = document.querySelector('.hint');
+  let timer = null;
+  let anchor = null;      // where the cursor came to rest
+
+  function arm(x, y) {
+    clearTimeout(timer);
+    anchor = { x, y };
+    timer = setTimeout(() => {
+      spawnDrop(anchor.x, anchor.y);
+    }, HOLD_MS);
+  }
+
+  function onMove(e) {
+    const { clientX: x, clientY: y } = e;
+    // small tremors don't reset the timer (or re-arm after a drop)
+    if (anchor && Math.hypot(x - anchor.x, y - anchor.y) <= JITTER) return;
+    arm(x, y);
+  }
+
+  function cancel() {
+    clearTimeout(timer);
+    anchor = null;
+  }
+
+  function spawnDrop(x, y) {
+    const d = document.createElement('div');
+    const vmin = Math.min(innerWidth, innerHeight) / 100;
+    const size = Math.min((45 + Math.random() * 25) * vmin, 520);
+    d.className = 'drop f' + (1 + Math.floor(Math.random() * 3));
+    d.style.cssText =
+      `--x:${x}px; --y:${y}px; --s:${size}px; --r:${Math.round(Math.random() * 360)}deg`;
+    d.innerHTML =
+      '<div class="bloom"></div><div class="spatter"></div>' +
+      '<div class="ring"></div><div class="shadow"></div><div class="fall"></div>';
+    document.body.appendChild(d);
+
+    hint.classList.add('gone');
+
+    setTimeout(() => fadeOut(d), LIFETIME_MS);
+
+    const drops = document.querySelectorAll('.drop:not(.fading)');
+    if (drops.length > MAX_DROPS) fadeOut(drops[0]);
+  }
+
+  function fadeOut(d) {
+    if (d.classList.contains('fading')) return;
+    d.classList.add('fading');
+    d.addEventListener('transitionend', () => d.remove(), { once: true });
+  }
+
+  addEventListener('pointermove', onMove);
+  addEventListener('pointerdown', onMove);
+  document.addEventListener('pointerleave', cancel);
+  addEventListener('blur', cancel);
+</script>
+
+</body>
+</html>

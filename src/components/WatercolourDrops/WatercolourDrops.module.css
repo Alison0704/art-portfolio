@@ -1,0 +1,94 @@
+/* Wash layer covering the whole document (not just the viewport), so washes
+   stay where they were painted as the page scrolls. Sits behind the content
+   and never takes the pointer. */
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  /* Blend the whole layer onto the page background so the washes stain
+     the paper instead of sitting on top of it as flat colour. */
+  mix-blend-mode: multiply;
+  /* Drop colour. */
+  --c: var(--green);
+}
+
+/* ---------- A single drop ---------- */
+/* left/top come from the component; --s carries the wash's final diameter. */
+.drop {
+  position: absolute;
+  width: 0;
+  height: 0;
+  perspective: 700px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Falling droplet — seen from above, coming down the z axis toward the paper */
+.fall {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.9) 0 10%, rgba(255, 255, 255, 0) 26%),
+    radial-gradient(circle at 60% 65%, color-mix(in srgb, var(--c) 60%, white) 0 20%, transparent 60%),
+    radial-gradient(circle, color-mix(in srgb, var(--c) 80%, transparent) 55%, color-mix(in srgb, var(--c) 80%, #23361f) 100%);
+  box-shadow: inset -2px -3px 5px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+}
+
+.shadow {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(60, 45, 30, 0.5), rgba(60, 45, 30, 0) 70%);
+  z-index: 4;
+}
+
+/* The bloom on the paper — thin, watery wash with a soft tide-line */
+.bloom {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  left: calc(var(--s) / -2);
+  top: calc(var(--s) / -2);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle,
+      color-mix(in srgb, var(--c) 14%, transparent) 0 40%,
+      color-mix(in srgb, var(--c) 22%, transparent) 58%,
+      color-mix(in srgb, var(--c) 40%, transparent) 66%,
+      color-mix(in srgb, var(--c) 62%, transparent) 69.5%,
+      transparent 71%);
+  filter: url(#wc-drop-1);
+  mix-blend-mode: multiply;
+}
+
+.f2 .bloom {
+  filter: url(#wc-drop-2);
+}
+
+.f3 .bloom {
+  filter: url(#wc-drop-3);
+}
+
+.sheen {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, rgba(255, 255, 255, 0.7), transparent 45%);
+  mix-blend-mode: screen;
+}
+
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}

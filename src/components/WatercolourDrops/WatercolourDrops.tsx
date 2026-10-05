@@ -3,10 +3,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { EASE_OUT } from "../../motion";
 import styles from "./WatercolourDrops.module.css";
 
-const HOLD_MS = 5000; // how long the cursor must stay still
+const HOLD_MS = 2000; // how long the cursor must stay still
 const JITTER = 4; // px of movement still counted as "in place"
 const MAX_DROPS = 12; // older washes fade out beyond this
-const LIFETIME_MS = 30000; // each wash disappears after this
+const LIFETIME_MS = 20000; // each wash disappears after this
 
 const FALL_S = 0.84; // droplet falling toward the paper
 const SPLASH_S = 1.01; // ...and bursting on impact
@@ -22,6 +22,37 @@ type Drop = {
   rotate: number;
   variant: string;
 };
+
+// Things that are never background, whatever their styling.
+const CONTENT = "a, button, input, textarea, select, label, img, svg, video, canvas, picture, [role=button], [tabindex]";
+
+const isPainted = (el: Element) => {
+  const css = getComputedStyle(el);
+  const bg = css.backgroundColor;
+  const transparent = bg === "transparent" || /rgba?\(.*,\s*0\)$/.test(bg);
+  return !transparent || css.backgroundImage !== "none" || css.boxShadow !== "none";
+};
+
+const isOverText = (el: Element, x: number, y: number) =>
+  Array.from(el.childNodes).some((node) => {
+    if (node.nodeType !== Node.TEXT_NODE || !node.textContent?.trim()) return false;
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    return Array.from(range.getClientRects()).some(
+      (r) => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom,
+    );
+  });
+
+/** True when the point is over bare page, not text, media, controls or a surface. */
+function isBackgroundAt(x: number, y: number) {
+  const hit = document.elementFromPoint(x, y);
+  if (!hit) return false;
+  if (hit.closest(CONTENT) || isOverText(hit, x, y)) return false;
+  for (let el: Element | null = hit; el && el !== document.body; el = el.parentElement) {
+    if (isPainted(el)) return false;
+  }
+  return true;
+}
 
 /** One drop: a falling bead, its shadow, and the wash it leaves behind. */
 function Wash({ drop }: { drop: Drop }) {
@@ -127,7 +158,8 @@ export default function WatercolourDrops() {
       if (armTimer !== null) window.clearTimeout(armTimer);
       anchor = { x, y };
       armTimer = window.setTimeout(() => {
-        if (anchor) spawnDrop(anchor.x, anchor.y);
+        // only drip onto the bare page, never onto content
+        if (anchor && isBackgroundAt(anchor.x, anchor.y)) spawnDrop(anchor.x, anchor.y);
       }, HOLD_MS);
       timers.add(armTimer);
     };
